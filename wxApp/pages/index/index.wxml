@@ -14,6 +14,7 @@
          </view>
       </view>
    </view>
+
    <view class="padding flex text-center text-grey bg-white">
       <view class="cu-capsule round">
          <view class="cu-tag bg-green ">
@@ -24,6 +25,7 @@
          </view>
       </view>
    </view>
+
 
    <view class="text-sm padding">
       <text class="text-grey"> 大多数人到死都没有向尘世之外瞥一眼。</text>
@@ -43,7 +45,7 @@
          <view class="content" style='width:75%'>
             <view class="text-pink">
                <text class="text-cut">莫甘娜</text>
-               <view class="cu-tag sm line-blue">科幻迷</view>
+               <!-- <view class="cu-tag sm line-blue">科幻迷</view> -->
             </view>
             <view class="flex margin-top">
                <view class="cu-progress round sm striped active ">
@@ -62,47 +64,95 @@
 <view class="cu-modal {{showModal?'show':''}}">
    <view class="cu-dialog">
       <view class="cu-bar bg-white justify-end solid-bottom">
-         <view class="content">操作&设置</view>
+         <view class="content">{{currModalTitle}}</view>
          <view class="action" bindtap="hideModal">
             <text class="cuIcon-close text-red"></text>
          </view>
       </view>
       <view class="text-left">
-         <view class="cu-list menu sm-border">
-            <view class="cu-item arrow">
-               <view class="content">
-                  <text class="cuIcon-circlefill text-grey"></text>
-                  <text class="text-grey">编辑书单</text>
+         <block wx:if="{{currModalContent == 'settings'}}">
+            <view class="cu-list menu sm-border">
+               <view class="cu-item arrow">
+                  <view class="content">
+                     <text class="cuIcon-edit text-green"></text>
+                     <text class="text-grey">编辑书单</text>
+                  </view>
+               </view>
+               <view class="cu-item arrow">
+                  <view class="content">
+                     <text class="cuIcon-tagfill text-pink"></text>
+                     <text class="text-grey">书虫标签</text>
+                  </view>
+                  <view class="action">
+                     <view class="cu-tag round bg-orange light">音乐</view>
+                     <view class="cu-tag round bg-olive light">电影</view>
+                     <view class="cu-tag round bg-blue light">旅行</view>
+                  </view>
+               </view>
+               <view class="cu-item arrow">
+                  <view class="content">
+                     <text class="cuIcon-evaluate_fill text-olive"></text>
+                     <text class="text-grey">贡献经典名句</text>
+                  </view>
+               </view>
+               <view class="cu-item {{menuArrow?'arrow':''}}">
+                  <view class="content">
+                     <text class="cuIcon-likefill text-red"></text>
+                     <text class="text-grey">感谢支持</text>
+                  </view>
+                  <view class="action">
+                     <text class="text-grey text-sm">小目标还没有实现！</text>
+                  </view>
                </view>
             </view>
-            <view class="cu-item arrow">
-               <view class="content">
-                  <text class="cuIcon-tagfill text-red"></text>
-                  <text class="text-grey">书虫标签</text>
-               </view>
-               <view class="action">
-                  <view class="cu-tag round bg-orange light">音乐</view>
-                  <view class="cu-tag round bg-olive light">电影</view>
-                  <view class="cu-tag round bg-blue light">旅行</view>
-               </view>
+         </block>
+
+         <block wx:elif="{{currModalContent == 'editBookList'}}">
+            <view style='max-height:{{windowHeight * .75}}px;overflow:auto'>
+               <form bindsubmit="submitBookList">
+
+                  <view class="cu-timeline">
+                     <view class="cu-item text-red cuIcon-favorfill">
+                        <view class="content bg-grey shadow-blur" style='padding:2px'>
+                           <view>
+                              <view class="cu-tag badge">
+                                 <text class="cuIcon-close xl text-white"></text>
+                              </view>
+                              <view class="cu-form-group cu-form-group-G">
+                                 <view class="title text-white">书籍名称 /</view>
+                                 <input name="bookName"></input>
+                              </view>
+                              <view class="cu-form-group cu-form-group-G">
+                                 <view class="title text-white">书籍作者 /</view>
+                                 <input name="bookAuthor"></input>
+                              </view>
+                           </view>
+                        </view>
+                     </view>
+                  </view>
+
+                  <view class="cu-timeline">
+                     <view class="cu-item cuIcon-roundadd  text-red">
+                        <view class="content" style='padding:2px'>
+                           <button class="cu-btn block bg-orange lg">
+                              <text class="cuIcon-roundadd"></text> 添加更多
+                           </button>
+                        </view>
+                     </view>
+                  </view>
+                  <view class="cu-timeline">
+                     <view class="cu-item cuIcon-upload text-red">
+                        <view class="content" style='padding:2px'>
+                           <button class="cu-btn block bg-green lg" form-type="submit">
+                              <text class="cuIcon-upload"></text> 保存
+                           </button>
+                        </view>
+                     </view>
+                  </view>
+               </form>
             </view>
-            <view class="cu-item arrow">
-               <view class="content">
-                  <text class="cuIcon-circlefill text-grey"></text>
-                  <text class="text-grey">贡献经典名句</text>
-               </view>
-            </view>
-            
-            <view class="cu-item {{menuArrow?'arrow':''}}">
-               <view class="content">
-                  <text class="cuIcon-likefill text-red"></text>
-                  <text class="text-grey">感谢支持</text>
-               </view>
-               <view class="action">
-                  <text class="text-grey text-sm">小目标还没有实现！</text>
-               </view>
-            </view>
-         </view>
+         </block>
+
       </view>
    </view>
 </view>

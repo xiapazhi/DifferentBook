@@ -13,6 +13,9 @@ Page({
 
       aniSettingsRotate: null,
       showModal: true,
+      currModalContent: 'editBookList', //'settings',
+      currModalTitle: '编辑书单', //'设置',
+      windowHeight:600,
    },
 
    showModal() {
@@ -25,6 +28,10 @@ Page({
       this.setData({
          showModal: false
       })
+   },
+
+   submitBookList(e) {
+      console.log(e)
    },
 
    /**
@@ -63,7 +70,15 @@ Page({
     * 生命周期函数--监听页面初次渲染完成
     */
    onReady: function() {
-
+      const that = this;
+      wx.getSystemInfo({
+         success(res) {
+            console.log(res.windowHeight)
+            that.setData({
+               windowHeight: res.windowHeight
+            })
+         }
+      })
    },
 
    /**
