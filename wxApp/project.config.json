@@ -11,6 +11,7 @@
 		"newFeature": true,
 		"autoAudits": false
 	},
+   "cloudfunctionRoot": "./cloudfunction/",
 	"compileType": "miniprogram",
 	"libVersion": "2.4.2",
 	"appid": "wxdd51e40390390129",

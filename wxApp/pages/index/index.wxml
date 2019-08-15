@@ -3,14 +3,17 @@
       <image src="https://image.weilanwl.com/gif/wave.gif" mode="scaleToFill" class="gif-wave"></image>
       <view class="flex padding align-center">
          <view class=" margin-xs radius">
-            <view class="cu-avatar xl round " style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big99008.jpg);"></view>
+            <view class="cu-avatar xl round " style="background-image:url({{scopeUserInfo && userInfo?userInfo.avatarUrl:'https://ossweb-img.qq.com/images/lol/web201310/skin/big99008.jpg'}});"></view>
          </view>
-         <view class="padding-sm margin-xs radius">
-            <text class="text-xl padding-xs text-mauve">邓布利多</text>
-            <view class="text-sm padding-xs text-purple">专业白袍魔导师</view>
+         <view wx:if="{{scopeUserInfo && userInfo}}" class="padding-sm margin-xs radius">
+            <text class="text-xl padding-xs text-mauve">{{userInfo.nickName}}</text>
+            <view class="text-sm padding-xs text-purple">星星点点，一往无前</view>
          </view>
-         <view class="fr text-shadow" style='position:relative;left:100px' bindtap='showModal'>
-            <text class="cuIcon-settingsfill lg text-orange" style='font-size:210%' animation="{{aniSettingsRotate}}"></text>
+         <view wx:else class="padding-sm margin-xs radius">
+            <button class='cu-btn line-orange shadow' open-type="getUserInfo" bindgetuserinfo="getUserInfo">登 录</button>
+         </view>
+         <view class="fr text-shadow" style='position:absolute;right:30px' bindtap='showModal'>
+            <text class="cuIcon-settingsfill lg text-orange" style='font-size:230%' animation="{{aniSettingsRotate}}"></text>
          </view>
       </view>
    </view>
@@ -111,20 +114,24 @@
             <view style='max-height:{{windowHeight * .75}}px;overflow:auto'>
                <form bindsubmit="submitBookList">
 
-                  <view class="cu-timeline">
+                  <view wx:for="{{booksList}}" class="cu-timeline">
                      <view class="cu-item text-red cuIcon-favorfill">
                         <view class="content bg-grey shadow-blur" style='padding:2px'>
                            <view>
-                              <view class="cu-tag badge">
+                              <view wx:if="{{booksList.length > 1}}" data-index="{{index}}" bindtap='delBook' class="cu-tag badge" style='height:20px'>
                                  <text class="cuIcon-close xl text-white"></text>
                               </view>
                               <view class="cu-form-group cu-form-group-G">
-                                 <view class="title text-white">书籍名称 /</view>
-                                 <input name="bookName"></input>
+                                 <view class="title text-white">书籍名称
+                                    <text style='color:#9c26b0'>/</text>
+                                 </view>
+                                 <input value="{{item.bookName}}" maxlength='30' style='color:#ffffff' name="bookName-{{index}}" data-type='name' data-index="{{index}}" bindinput='bookMsgInput'></input>
                               </view>
                               <view class="cu-form-group cu-form-group-G">
-                                 <view class="title text-white">书籍作者 /</view>
-                                 <input name="bookAuthor"></input>
+                                 <view class="title text-white">书籍作者
+                                    <text style='color:#9c26b0'>/</text>
+                                 </view>
+                                 <input value="{{item.bookAuthor}}" style='color:#ffffff' maxlength='30' name="bookAuthor-{{index}}" data-type='author' data-index="{{index}}" bindinput='bookMsgInput'></input>
                               </view>
                            </view>
                         </view>
@@ -134,8 +141,8 @@
                   <view class="cu-timeline">
                      <view class="cu-item cuIcon-roundadd  text-red">
                         <view class="content" style='padding:2px'>
-                           <button class="cu-btn block bg-orange lg">
-                              <text class="cuIcon-roundadd"></text> 添加更多
+                           <button class="cu-btn block bg-orange lg" bindtap='addBook'>
+                              <text class="cuIcon-read" style='margin-right:10px'></text> 添加更多
                            </button>
                         </view>
                      </view>
@@ -144,7 +151,7 @@
                      <view class="cu-item cuIcon-upload text-red">
                         <view class="content" style='padding:2px'>
                            <button class="cu-btn block bg-green lg" form-type="submit">
-                              <text class="cuIcon-upload"></text> 保存
+                              <text class="cuIcon-upload" style='margin-right:10px'></text> 保存
                            </button>
                         </view>
                      </view>

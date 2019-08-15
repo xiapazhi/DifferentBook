@@ -4,18 +4,27 @@ const app = getApp()
 
 Page({
    data: {
-      StatusBar: app.globalData.StatusBar,
-      CustomBar: app.globalData.CustomBar,
-      motto: 'Hi 开发者！',
-      userInfo: {},
-      hasUserInfo: false,
+      scopeUserInfo: false,
+      userInfo: null,
       canIUse: wx.canIUse('button.open-type.getUserInfo'),
 
       aniSettingsRotate: null,
-      showModal: true,
+      showModal: false,
       currModalContent: 'editBookList', //'settings',
       currModalTitle: '编辑书单', //'设置',
-      windowHeight:600,
+      windowHeight: 600,
+      booksList: [{
+         bookName: '',
+         bookAuthor: ''
+      }],
+   },
+
+   getUserInfo: function(e) {
+      app.globalData.userInfo = e.detail.userInfo
+      this.setData({
+         userInfo: e.detail.userInfo,
+         scopeUserInfo: true
+      })
    },
 
    showModal() {
@@ -32,38 +41,77 @@ Page({
 
    submitBookList(e) {
       console.log(e)
+      const {
+         booksList
+      } = this.data;
+      console.log(booksList);
+      // 调用云函数
+      wx.cloud.callFunction({
+         name: 'changeUserBooks',
+         data: {
+            booksList: booksList
+         },
+         success: res => {
+            console.log(res)
+         },
+         fail: err => {
+            console.log(err)
+         }
+      })
+   },
+
+   addBook() {
+      let {
+         booksList
+      } = this.data;
+      booksList.push({
+         bookName: '',
+         bookAuthor: ''
+      });
+      this.setData({
+         booksList: booksList
+      })
+   },
+
+   delBook(e) {
+      console.log(e)
+      let {
+         booksList
+      } = this.data;
+      let index = e.currentTarget.dataset.index;
+      booksList.splice(index, 1);
+      this.setData({
+         booksList: booksList
+      })
+   },
+
+   bookMsgInput(e) {
+      console.log(e)
+      let {
+         booksList
+      } = this.data;
+      let dataSet = e.currentTarget.dataset;
+      let value = e.detail.value;
+      if (dataSet.type == 'name') {
+         booksList[dataSet.index].bookName = value;
+      } else {
+         booksList[dataSet.index].bookAuthor = value;
+      }
    },
 
    /**
     * 生命周期函数--监听页面加载
     */
    onLoad: function() {
-      if (app.globalData.userInfo) {
-         this.setData({
-            userInfo: app.globalData.userInfo,
-            hasUserInfo: true
-         })
-      } else if (this.data.canIUse) {
-         // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
-         // 所以此处加入 callback 以防止这种情况
-         app.userInfoReadyCallback = res => {
+      wx.getUserInfo({
+         success: res => {
+            app.globalData.userInfo = res.userInfo
             this.setData({
                userInfo: res.userInfo,
-               hasUserInfo: true
+               scopeUserInfo: true
             })
          }
-      } else {
-         // 在没有 open-type=getUserInfo 版本的兼容处理
-         wx.getUserInfo({
-            success: res => {
-               app.globalData.userInfo = res.userInfo
-               this.setData({
-                  userInfo: res.userInfo,
-                  hasUserInfo: true
-               })
-            }
-         })
-      }
+      })
    },
 
    /**
