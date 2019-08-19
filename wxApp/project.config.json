@@ -9,11 +9,20 @@
 		"postcss": true,
 		"minified": true,
 		"newFeature": true,
-		"autoAudits": false
+		"nodeModules": false,
+		"autoAudits": false,
+		"checkInvalidKey": true,
+		"checkSiteMap": true,
+		"uploadWithSourceMap": true,
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		}
 	},
-   "cloudfunctionRoot": "./cloudfunction/",
+	"cloudfunctionRoot": "cloudfunction/",
 	"compileType": "miniprogram",
-	"libVersion": "2.4.2",
+	"libVersion": "2.8.0",
 	"appid": "wxdd51e40390390129",
 	"projectname": "%E9%9D%9E%E5%90%8C%E5%AF%BB%E4%B9%A6",
 	"debugOptions": {
@@ -22,6 +31,7 @@
 	"isGameTourist": false,
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
+	"cloudfunctionTemplateRoot": "cloudfunctionTemplate",
 	"condition": {
 		"search": {
 			"current": -1,
