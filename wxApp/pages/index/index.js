@@ -20,7 +20,6 @@ Page({
   },
 
   getUserInfo: function(e) {
-    app.globalData.userInfo = e.detail.userInfo
     this.setData({
       userInfo: e.detail.userInfo,
       scopeUserInfo: true
@@ -64,7 +63,7 @@ Page({
         booksList: confirmBooksList
       },
       success: res => {
-        console.log(res)
+
       },
       fail: err => {
         console.log(err)
@@ -103,7 +102,7 @@ Page({
       booksList
     } = this.data;
     let dataSet = e.currentTarget.dataset;
-    let value = e.detail.value.replace(/\s*/g, "");
+    let value = e.detail.value.replace(/[\s《》]/g, "");
     if (dataSet.type == 'name') {
       booksList[dataSet.index].bookName = value;
     } else {

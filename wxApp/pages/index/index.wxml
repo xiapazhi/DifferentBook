@@ -7,7 +7,7 @@
       </view>
       <view wx:if="{{scopeUserInfo && userInfo}}" class="padding-sm margin-xs radius">
         <text class="text-xl padding-xs text-mauve">{{userInfo.nickName}}</text>
-        <view class="text-sm padding-xs text-purple">星星点点，一往无前</view>
+        <view class="text-sm padding-xs text-purple">奇文共欣赏，疑义相如析</view>
       </view>
       <view wx:else class="padding-sm margin-xs radius">
         <button class='cu-btn line-orange shadow' open-type="getUserInfo" bindgetuserinfo="getUserInfo">登 录</button>
