@@ -1,7 +1,7 @@
 //index.js
-//获取应用实例
-const app = getApp()
-
+const app = getApp();
+const db = wx.cloud.database();
+const dbUsers = db.collection('users');
 Page({
   data: {
     scopeUserInfo: false,
@@ -9,7 +9,7 @@ Page({
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
 
     aniSettingsRotate: null,
-    showModal: true,
+    showModal: false,
     currModalContent: 'editBookList', //'settings',
     currModalTitle: '编辑书单', //'设置',
     windowHeight: 600,
@@ -20,9 +20,23 @@ Page({
   },
 
   getUserInfo: function(e) {
+    const userInfo = e.detail.userInfo
     this.setData({
-      userInfo: e.detail.userInfo,
+      userInfo: userInfo,
       scopeUserInfo: true
+    });
+    console.log(userInfo)
+    wx.cloud.callFunction({
+      name: 'login',
+      data: {
+        userInfo_: userInfo
+      },
+      success: res => {
+
+      },
+      fail: err => {
+
+      }
     })
   },
 
@@ -132,7 +146,6 @@ Page({
     const that = this;
     wx.getSystemInfo({
       success(res) {
-        console.log(res.windowHeight)
         that.setData({
           windowHeight: res.windowHeight
         })
