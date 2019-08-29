@@ -18,15 +18,17 @@
     </view>
   </view>
 
-  <view class="padding flex text-center text-grey bg-white">
-    <view class="cu-capsule round">
-      <view class="cu-tag bg-green ">
-        三体
+  <view class=" flex text-grey bg-white" style="display:block;padding:12rpx;">
+    <block wx:for="{{booksList}}" wx:key="{{index}}">
+      <view wx:if="{{item.bookName}}" class="cu-capsule round" style="margin:0 10rpx 16rpx">
+        <view class="cu-tag bg-green text-center ">
+          {{item.bookName}}
+        </view>
+        <view class="cu-tag line-green text-center ">
+          {{item.bookAuthor}}
+        </view>
       </view>
-      <view class="cu-tag line-green">
-        刘慈欣
-      </view>
-    </view>
+    </block>
   </view>
 
 
@@ -116,7 +118,7 @@
 
             <view wx:for="{{booksList}}" class="cu-timeline" wx:key="{{index}}">
               <view style="position:relative;left:85rpx;top:76rpx;z-index:999;color:#e54d42; text-decoration:underline">{{index+1}}</view>
-              <view class="cu-item text-red cuIcon-favorfill">
+              <view class="cu-item text-red cuIcon-favorfill" style="padding-top:0;padding-bottom:0">
                 <view class="content bg-grey shadow-blur" style='padding:2px'>
                   <view>
                     <view wx:if="{{booksList.length > 1}}" data-index="{{index}}" bindtap='delBook' class="cu-tag badge" style='height:20px'>

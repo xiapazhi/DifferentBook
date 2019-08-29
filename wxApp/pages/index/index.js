@@ -77,7 +77,7 @@ Page({
         booksList: confirmBooksList
       },
       success: res => {
-
+        console.log(res)
       },
       fail: err => {
         console.log(err)
@@ -124,6 +124,50 @@ Page({
     }
   },
 
+  getBooksList() {
+    const that = this;
+    wx.cloud.callFunction({
+      name: 'getBooksList',
+      success: res => {
+        console.log(res)
+        let booksList = res.result.booksList
+        let booksListShow = [];
+        for (let b of booksList) {
+          booksListShow.push({
+            bookName: b.name,
+            bookAuthor: b.author
+          })
+        }
+        if (booksListShow.length) {
+          that.setData({
+            booksList: booksListShow
+          })
+        }
+      },
+      fail: err => {
+        console.log(err)
+      }
+    })
+  },
+
+  getSimlirity() {
+    wx.cloud.callFunction({
+      name: 'getSimilarity',
+      success: res => {
+        console.log(res)
+        let {
+          user,
+          book,
+          map
+        } = res.result
+
+      },
+      fail: err => {
+        console.log(err)
+      }
+    })
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
@@ -137,6 +181,9 @@ Page({
         })
       }
     })
+
+    this.getBooksList()
+    this.getSimlirity()
   },
 
   /**
@@ -144,6 +191,7 @@ Page({
    */
   onReady: function() {
     const that = this;
+    //系统信息
     wx.getSystemInfo({
       success(res) {
         that.setData({
@@ -151,6 +199,8 @@ Page({
         })
       }
     })
+
+
   },
 
   /**

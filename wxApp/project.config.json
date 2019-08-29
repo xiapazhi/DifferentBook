@@ -6,6 +6,7 @@
 	"setting": {
 		"urlCheck": true,
 		"es6": true,
+		"enhance": false,
 		"postcss": true,
 		"minified": true,
 		"newFeature": true,
@@ -22,7 +23,7 @@
 	},
 	"cloudfunctionRoot": "cloudfunction/",
 	"compileType": "miniprogram",
-	"libVersion": "2.8.0",
+	"libVersion": "2.8.1",
 	"appid": "wxdd51e40390390129",
 	"projectname": "%E9%9D%9E%E5%90%8C%E5%AF%BB%E4%B9%A6",
 	"debugOptions": {

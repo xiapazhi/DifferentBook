@@ -10,14 +10,14 @@ exports.main = async(event, context) => {
     // const wxContext = cloud.getWXContext()
     const booksList = event.booksList;
     const booksCollection = db.collection("books");
-    const userBooksCollection = db.collection("user_books");
+    const usersCollection = db.collection("users");
     const userInfo = event.userInfo;
-    let userBooks = await userBooksCollection.where({
+    let userBooks = await usersCollection.where({
       openid: userInfo.openId
     }).limit(1).get();
-    if(userBooks.data.length){
+    if (userBooks.data.length) {
       let books = userBooks.data[0].books;
-      if(books && books.length){
+      if (books && books.length) {
         await booksCollection.where({
           _id: _.in(books)
         }).update({
@@ -64,7 +64,7 @@ exports.main = async(event, context) => {
 
 
     if (userBooks.data.length) {
-      await userBooksCollection.where({
+      await usersCollection.where({
         _id: userBooks.data[0]._id
       }).update({
         data: {
@@ -72,13 +72,24 @@ exports.main = async(event, context) => {
         }
       })
     } else {
-      let addRes = await userBooksCollection.add({
+      let addRes = await usersCollection.add({
         data: {
           openid: userInfo.openId,
           books: userBookIds
         }
       })
     }
+
+    await cloud.callFunction({
+      // 要调用的云函数名称
+      name: 'calculateSimilarity',
+      // 传递给云函数的参数
+      data: {
+        userBookIds: userBookIds,
+        userOpenid: userInfo.openId,
+      }
+    })
+
     return {
 
     }
