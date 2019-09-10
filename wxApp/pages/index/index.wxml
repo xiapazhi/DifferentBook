@@ -1,6 +1,6 @@
 <scroll-view scroll-y class="scrollPage">
   <view class="UCenter-bg">
-    <image src="https://image.weilanwl.com/gif/wave.gif" mode="scaleToFill" class="gif-wave"></image>
+    <image src="../../images/wave.gif" mode="scaleToFill" class="gif-wave"></image>
     <view class="flex padding align-center">
       <view class=" margin-xs radius">
         <view class="cu-avatar xl round " style="background-image:url({{scopeUserInfo && userInfo?userInfo.avatarUrl:'https://ossweb-img.qq.com/images/lol/web201310/skin/big99008.jpg'}});"></view>
@@ -18,9 +18,9 @@
     </view>
   </view>
 
-  <view class=" flex text-grey bg-white" style="display:block;padding:12rpx;">
+  <view class=" flex text-grey bg-white" style="display:block;padding:12rpx;max-height:76rpx;overflow:hidden">
     <block wx:for="{{booksList}}" wx:key="{{index}}">
-      <view wx:if="{{item.bookName}}" class="cu-capsule round" style="margin:0 10rpx 16rpx">
+      <view wx:if="{{item.bookName}}" class="cu-capsule round" style="margin:0 10rpx 16rpx;">
         <view class="cu-tag bg-green text-center ">
           {{item.bookName}}
         </view>
@@ -30,7 +30,9 @@
       </view>
     </block>
   </view>
-
+  <view wx:if="{{booksList.length > 1}}" style="text-align:center;background:linear-gradient(#ffffff, #f1f1f1);">
+    <image src="../../images/expand.png" style="height:20rpx;width:55rpx"></image>
+  </view>
 
   <view class="text-sm padding">
     <text class="text-grey"> 大多数人到死都没有向尘世之外瞥一眼。</text>
@@ -45,18 +47,18 @@
     </view>
   </view>
   <view class="cu-list menu-avatar">
-    <view class="cu-item ">
-      <view class="cu-avatar radius lg" style="background-image:url(https://ossweb-img.qq.com/images/lol/img/champion/Morgana.png);"></view>
+    <view wx:for="{{map}}" wx:key="{{index}}" class="cu-item ">
+      <view class="cu-avatar radius lg" style="background-image:url({{item.userInfo.avatarUrl}});"></view>
       <view class="content" style='width:75%'>
         <view class="text-pink">
-          <text class="text-cut">莫甘娜</text>
+          <text class="text-cut">{{item.userInfo.nickName}}</text>
           <!-- <view class="cu-tag sm line-blue">科幻迷</view> -->
         </view>
         <view class="flex margin-top">
           <view class="cu-progress round sm striped active ">
-            <view class="bg-green" style="width:60%"></view>
+            <view class="bg-green" style="width:{{item.similarity}}%"></view>
           </view>
-          <text class="margin-left">80%</text>
+          <text class="margin-left">{{item.similarity}}%</text>
         </view>
       </view>
       <!-- <view class="action">

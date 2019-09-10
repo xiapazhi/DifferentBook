@@ -17,6 +17,7 @@ Page({
       bookName: '',
       bookAuthor: ''
     }],
+    map: []
   },
 
   getUserInfo: function(e) {
@@ -150,7 +151,21 @@ Page({
     })
   },
 
+  getRandomName() {
+    switch (Math.floor(Math.random() * 3)) {
+      case 0:
+        return '钢铁侠'
+      case 1:
+        return '机器猫'
+      case 2:
+        return '小书虫'
+      default:
+        return '神秘用户'
+    }
+  },
+
   getSimlirity() {
+    const that = this;
     wx.cloud.callFunction({
       name: 'getSimilarity',
       success: res => {
@@ -160,7 +175,22 @@ Page({
           book,
           map
         } = res.result
-
+        for (let m of map) {
+          let currUser = user.find(u => u.openid == m.vice_openid);
+          console.log(currUser)
+          if (currUser && currUser.user_info) {
+            m.userInfo = currUser.user_info
+          } else {
+            m.userInfo = {
+              avatarUrl: '../../images/default_avatar.jpg',
+              nickName: `一位不愿意透漏姓名的${that.getRandomName()}`
+            }
+          }
+          console.log(map)
+        }
+        that.setData({
+          map,
+        })
       },
       fail: err => {
         console.log(err)
