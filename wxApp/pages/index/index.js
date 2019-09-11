@@ -9,6 +9,7 @@ Page({
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
 
     aniSettingsRotate: null,
+    aniExpandBooksIcon:{},
     showModal: false,
     currModalContent: 'editBookList', //'settings',
     currModalTitle: '编辑书单', //'设置',
@@ -17,7 +18,10 @@ Page({
       bookName: '',
       bookAuthor: ''
     }],
-    map: []
+    map: [],
+    defaultAvatarUrl: '../../images/default_avatar.jpg',
+    showAllSelfBooks: false,
+    selfBooksDomStyle:'height:76rpx'// 'max-height:76rpx',
   },
 
   getUserInfo: function(e) {
@@ -182,7 +186,7 @@ Page({
             m.userInfo = currUser.user_info
           } else {
             m.userInfo = {
-              avatarUrl: '../../images/default_avatar.jpg',
+              avatarUrl: that.data.defaultAvatarUrl,
               nickName: `一位不愿意透漏姓名的${that.getRandomName()}`
             }
           }
@@ -196,6 +200,36 @@ Page({
         console.log(err)
       }
     })
+  },
+
+  expandSelfBooks(e) {
+    console.log(e)
+    const {
+      showAllSelfBooks
+    } = this.data;
+    if (showAllSelfBooks) {
+      let animation = wx.createAnimation({
+        duration: 500,
+        timingFunction: 'ease',
+      });
+      animation.rotateX(360).step()
+      this.setData({
+        aniExpandBooksIcon: animation.export(),
+        showAllSelfBooks: false,
+        selfBooksDomStyle: 'max-height:76rpx'
+      })
+    } else { //展开
+      let animation = wx.createAnimation({
+        duration: 500,
+        timingFunction: 'ease',
+      });
+      animation.rotateX(180).step()
+      this.setData({
+        aniExpandBooksIcon: animation.export(),
+        showAllSelfBooks: true,
+        selfBooksDomStyle: 'max-height:auto'
+      })
+    }
   },
 
   /**
