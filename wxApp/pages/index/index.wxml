@@ -12,14 +12,15 @@
       <view wx:else class="padding-sm margin-xs radius">
         <button class='cu-btn line-orange shadow' open-type="getUserInfo" bindgetuserinfo="getUserInfo">登 录</button>
       </view>
+      <!-- 编辑按钮 -->
       <view class="fr text-shadow" style='position:absolute;right:30px' bindtap='showModal'>
         <text class="cuIcon-settingsfill lg text-orange" style='font-size:230%' animation="{{aniSettingsRotate}}"></text>
       </view>
     </view>
   </view>
 
-  <view class=" flex text-grey bg-white" style="{{selfBooksDomStyle}};display:block;padding:12rpx;overflow:hidden" >
-    <block wx:for="{{booksList}}" wx:key="{{index}}">
+  <view class="flex text-grey bg-white" style="{{selfBooksDomStyle}};display:block;padding:16rpx;overflow:hidden" >
+    <block wx:for="{{booksList}}" wx:key="index">
       <view wx:if="{{item.bookName}}" class="cu-capsule round" style="margin:0 10rpx 16rpx;">
         <view class="cu-tag bg-green text-center ">
           {{item.bookName}}
@@ -41,13 +42,13 @@
     </view>
   </view>
 
-  <view class="cu-bar bg-white solid-bottom">
+  <view class="cu-bar bg-white solid-bottom" style="min-height:88rpx">
     <view class="action">
       <text class="cuIcon-title text-orange "></text> 相似度列表
     </view>
   </view>
-  <view class="cu-list menu-avatar">
-    <view wx:for="{{map}}" wx:key="{{index}}" class="cu-item ">
+  <view class="cu-list menu-avatar contrast-user-content">
+    <view wx:for="{{map}}" wx:key="index" class="cu-item division-line" style="" data-userId='{{item.vice_openid}}' bindtap='similarUserClick'>
       <view class="cu-avatar radius lg" style="background-image:url({{item.userInfo.avatarUrl}});"></view>
       <view class="content" style='width:75%'>
         <view class="text-pink">
@@ -58,17 +59,31 @@
           <view class="cu-progress round sm striped active ">
             <view class="bg-green" style="width:{{item.similarity}}%"></view>
           </view>
-          <text class="margin-left">{{item.similarity}}%</text>
+          <text class="margin-left" style="position:relative;bottom:6rpx">{{item.similarity}}%</text>
         </view>
       </view>
       <!-- <view class="action">
 
       </view> -->
-      <view style="position:static;clear:both">233323423</view>
+      <!-- 比对用户书籍详情 -->
+      <view id='contrast-user-{{item.vice_openid}}' wx:if="{{curContrastUserBookData.length}}" class="contrast-user-book {{item.vice_openid == aniExpandBookUserId?'contrast-user-open':'contrast-user-close'}}">
+        <view style="height:56px;margin-bottom:8px"></view>
+        <block wx:for="{{curContrastUserBookData}}" wx:key="index">
+          <view wx:if="{{item.name}}" class="cu-capsule round" style="margin:0 10rpx 16rpx;">
+            <view class="cu-tag bg-{{item.isRepeat?'grey':'olive'}} text-center ">
+              {{item.name}}
+            </view>
+            <view class="cu-tag line-{{item.isRepeat?'grey':'olive'}} text-center ">
+              {{item.author}}
+            </view>
+          </view>
+        </block>
+      </view>
     </view>
   </view>
 </scroll-view>
 
+<!-- 添加书籍Modal -->
 <view class="cu-modal {{showModal?'show':''}}">
   <view class="cu-dialog">
     <view class="cu-bar bg-white justify-end solid-bottom">
@@ -118,8 +133,8 @@
       <block wx:elif="{{currModalContent == 'editBookList'}}">
         <view style='max-height:{{windowHeight * .75}}px;overflow:auto'>
           <form bindsubmit="submitBookList">
-
-            <view wx:for="{{booksList}}" class="cu-timeline" wx:key="{{index}}">
+            <!-- 遍历列表 -->
+            <view wx:for="{{booksList}}" class="cu-timeline" wx:key="index">
               <view style="position:relative;left:85rpx;top:76rpx;z-index:999;color:#e54d42; text-decoration:underline">{{index+1}}</view>
               <view class="cu-item text-red cuIcon-favorfill" style="padding-top:0;padding-bottom:0">
                 <view class="content bg-grey shadow-blur" style='padding:2px'>
@@ -143,7 +158,7 @@
                 </view>
               </view>
             </view>
-
+            <!-- 操作按钮 -->
             <view class="cu-timeline">
               <view class="cu-item cuIcon-roundadd  text-red">
                 <view class="content" style='padding:2px'>
@@ -167,5 +182,11 @@
       </block>
 
     </view>
+  </view>
+
+  <view class='cu-load load-modal' wx:if="{{loadModal}}">
+    <view class='cuIcon-evaluate_fill text-orange'></view>
+    <!-- <image src='/images/logo.png' class='png' mode='aspectFit'></image> -->
+    <view class='gray-text'>保存中...</view>
   </view>
 </view>

@@ -7,30 +7,37 @@ Page({
     scopeUserInfo: false,
     userInfo: null,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
-
     aniSettingsRotate: null,
-    aniExpandBooksIcon:{},
+    aniExpandBooksIcon: {},
+    aniExpandBookUserId: '',
     showModal: false,
     currModalContent: 'editBookList', //'settings',
     currModalTitle: '编辑书单', //'设置',
     windowHeight: 600,
-    booksList: [{
+    booksList: [{ //当前登陆用户的书籍信息
+      bookName: '',
+      bookAuthor: ''
+    }],
+    originBookList: [{//当前登陆用户的原始书籍信息
       bookName: '',
       bookAuthor: ''
     }],
     map: [],
+    user: [],
+    book: [],
     defaultAvatarUrl: '../../images/default_avatar.jpg',
     showAllSelfBooks: false,
-    selfBooksDomStyle:'height:76rpx'// 'max-height:76rpx',
+    selfBooksDomStyle: 'height:76rpx',// 'max-height:76rpx',
+    loadModal: false,
+    curContrastUserBookData: []
   },
 
-  getUserInfo: function(e) {
+  getUserInfo: function (e) {
     const userInfo = e.detail.userInfo
     this.setData({
       userInfo: userInfo,
       scopeUserInfo: true
     });
-    console.log(userInfo)
     wx.cloud.callFunction({
       name: 'login',
       data: {
@@ -52,20 +59,21 @@ Page({
   },
 
   hideModal() {
+    const { originBookList } = this.data;
     this.setData({
-      showModal: false
+      showModal: false,
+      booksList: originBookList
     })
   },
 
   submitBookList(e) {
-    console.log(e)
     const {
       booksList
     } = this.data;
-    console.log(booksList);
     let confirmBooksList = [];
     for (let i in booksList) {
-      if (confirmBooksList.some(c => c.bookName == booksList[i].bookName)) {
+      if (confirmBooksList.some(c => c.bookName == booksList[i].bookName &&
+        (!c.bookAuthor || c.bookAuthor != booksList[i].bookAuthor))) {
         return wx.showToast({
           title: `序号为${parseInt(i) + 1}的作品《${booksList[i].bookName}》重复啦`,
           icon: 'none',
@@ -75,6 +83,9 @@ Page({
         confirmBooksList.push(booksList[i])
       }
     }
+    this.setData({
+      loadModal: true
+    });
     // 调用云函数
     wx.cloud.callFunction({
       name: 'changeUserBooks',
@@ -82,10 +93,18 @@ Page({
         booksList: confirmBooksList
       },
       success: res => {
-        console.log(res)
+        this.setData({
+          booksList: confirmBooksList,
+          originBookList: JSON.parse(JSON.stringify(confirmBooksList)),
+          loadModal: false
+        })
+        this.hideModal()
       },
       fail: err => {
-        console.log(err)
+        wx.showToast({
+          title: `真不好意思，保存失败啦`,
+          icon: 'none',
+        })
       }
     })
   },
@@ -104,7 +123,6 @@ Page({
   },
 
   delBook(e) {
-    console.log(e)
     let {
       booksList
     } = this.data;
@@ -116,7 +134,6 @@ Page({
   },
 
   bookMsgInput(e) {
-    console.log(e)
     let {
       booksList
     } = this.data;
@@ -134,23 +151,24 @@ Page({
     wx.cloud.callFunction({
       name: 'getBooksList',
       success: res => {
-        console.log(res)
         let booksList = res.result.booksList
         let booksListShow = [];
         for (let b of booksList) {
           booksListShow.push({
+            _id:b._id,
             bookName: b.name,
             bookAuthor: b.author
           })
         }
         if (booksListShow.length) {
           that.setData({
-            booksList: booksListShow
+            booksList: booksListShow,
+            originBookList: JSON.parse(JSON.stringify(booksListShow))
           })
         }
       },
       fail: err => {
-        console.log(err)
+        
       }
     })
   },
@@ -173,7 +191,6 @@ Page({
     wx.cloud.callFunction({
       name: 'getSimilarity',
       success: res => {
-        console.log(res)
         let {
           user,
           book,
@@ -181,7 +198,6 @@ Page({
         } = res.result
         for (let m of map) {
           let currUser = user.find(u => u.openid == m.vice_openid);
-          console.log(currUser)
           if (currUser && currUser.user_info) {
             m.userInfo = currUser.user_info
           } else {
@@ -190,28 +206,28 @@ Page({
               nickName: `一位不愿意透漏姓名的${that.getRandomName()}`
             }
           }
-          console.log(map)
         }
         that.setData({
           map,
+          user,
+          book,
         })
       },
       fail: err => {
-        console.log(err)
+        
       }
     })
   },
 
   expandSelfBooks(e) {
-    console.log(e)
     const {
       showAllSelfBooks
     } = this.data;
+    let animation = wx.createAnimation({
+      duration: 500,
+      timingFunction: 'ease',
+    });
     if (showAllSelfBooks) {
-      let animation = wx.createAnimation({
-        duration: 500,
-        timingFunction: 'ease',
-      });
       animation.rotateX(360).step()
       this.setData({
         aniExpandBooksIcon: animation.export(),
@@ -219,10 +235,6 @@ Page({
         selfBooksDomStyle: 'max-height:76rpx'
       })
     } else { //展开
-      let animation = wx.createAnimation({
-        duration: 500,
-        timingFunction: 'ease',
-      });
       animation.rotateX(180).step()
       this.setData({
         aniExpandBooksIcon: animation.export(),
@@ -232,10 +244,43 @@ Page({
     }
   },
 
+  //点击相似用户
+  similarUserClick(e) {
+    const { user, booksList, book, aniExpandBookUserId } = this.data;
+    let { userid } = e.currentTarget.dataset;
+    if (userid == aniExpandBookUserId) {
+      this.setData({
+        aniExpandBookUserId: '',
+        curContrastUserBookData: []
+      });
+      return;
+    }
+    let curUser = user.find(u => u.openid == userid);
+    if (curUser) {
+      let curUserBook = curUser.books;
+      let curUserBookData = [];
+      for (let cub of curUserBook) {
+        let bookRes = book.find(b => b._id == cub);
+        let isRepeat = booksList.some(b => b._id == cub);
+        curUserBookData.push({
+          _id: cub,
+          name: bookRes.name,
+          author: bookRes.author,
+          isRepeat,
+        })
+      }
+      
+      this.setData({
+        curContrastUserBookData: curUserBookData,
+        aniExpandBookUserId: userid
+      })
+    }
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function() {
+  onLoad: function () {
     wx.getUserInfo({
       success: res => {
         app.globalData.userInfo = res.userInfo
@@ -253,7 +298,7 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function() {
+  onReady: function () {
     const that = this;
     //系统信息
     wx.getSystemInfo({
@@ -270,42 +315,42 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function() {
+  onShow: function () {
 
   },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide: function() {
+  onHide: function () {
 
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload: function() {
+  onUnload: function () {
 
   },
 
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function() {
+  onPullDownRefresh: function () {
 
   },
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function() {
+  onReachBottom: function () {
 
   },
 
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage: function() {
+  onShareAppMessage: function () {
 
   }
 })
